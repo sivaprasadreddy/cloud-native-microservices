@@ -1,9 +1,9 @@
-name: Build Delivery Service Micronaut
+name: Build Product Service SpringBoot
 
 on:
   push:
     paths:
-      - delivery-service-micronaut/**
+      - product-service-boot/**
     branches:
       - '**'
 
@@ -12,9 +12,9 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     env:
-      working-directory: ./delivery-service-micronaut
-      DOCKER_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/delivery-service-micronaut
-      DOCKER_NATIVE_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/delivery-service-micronaut-native
+      working-directory: ./product-service-boot
+      DOCKER_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/product-service-boot
+      DOCKER_NATIVE_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/product-service-boot-native
     defaults:
       run:
         working-directory: ${{ env.working-directory }}
@@ -34,6 +34,6 @@ jobs:
       - if: ${{ github.ref == 'refs/heads/main' }}
         name: Build and Publish Docker Image
         run: |
-          ./mvnw package -Dpackaging=docker
+          docker build -f src/main/docker/Dockerfile.jvm -t $DOCKER_IMAGE_NAME .
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker push $DOCKER_IMAGE_NAME

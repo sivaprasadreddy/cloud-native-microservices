@@ -16,6 +16,9 @@
 		<java.version>17</java.version>
 		<testcontainers.version>1.17.6</testcontainers.version>
 		<spotless.version>2.17.4</spotless.version>
+		<jib-maven-plugin.version>3.1.4</jib-maven-plugin.version>
+		<dockerhub.username>sivaprasadreddy</dockerhub.username>
+		<dockerhub.imageName>${dockerhub.username}/${project.artifactId}</dockerhub.imageName>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -145,6 +148,28 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>jib-maven-plugin</artifactId>
+				<version>${jib-maven-plugin.version}</version>
+				<configuration>
+					<from>
+						<image>eclipse-temurin:17-jre-focal</image>
+					</from>
+					<to>
+						<image>${dockerhub.imageName}</image>
+						<tags>
+							<tag>latest</tag>
+							<tag>${project.version}</tag>
+						</tags>
+					</to>
+					<container>
+						<ports>
+							<port>8081</port>
+						</ports>
+					</container>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

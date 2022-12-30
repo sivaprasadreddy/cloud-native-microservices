@@ -1,4 +1,4 @@
-name: Build Order Service
+name: Build Order Service SpringBoot
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: Build OrderService
+    name: Build
     runs-on: ubuntu-latest
     env:
       working-directory: ./order-service-boot

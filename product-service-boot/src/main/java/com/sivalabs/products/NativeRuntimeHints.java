@@ -5,6 +5,5 @@ import org.springframework.aot.hint.RuntimeHintsRegistrar;
 
 public class NativeRuntimeHints implements RuntimeHintsRegistrar {
     @Override
-    public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-    }
+    public void registerHints(RuntimeHints hints, ClassLoader classLoader) {}
 }

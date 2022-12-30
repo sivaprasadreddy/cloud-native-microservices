@@ -11,6 +11,10 @@ function build() {
     ./mvnw clean spotless:apply verify
     cd ..
 
+    cd product-service-boot || exit
+    ./mvnw clean spotless:apply verify
+    cd ..
+
     cd order-service-boot || exit
     ./mvnw clean spotless:apply verify
     cd ..
