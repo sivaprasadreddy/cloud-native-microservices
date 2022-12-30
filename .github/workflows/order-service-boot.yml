@@ -1,0 +1,39 @@
+name: Build Order Service
+
+on:
+  push:
+    paths:
+      - order-service-boot/**
+    branches:
+      - '**'
+
+jobs:
+  build:
+    name: Build OrderService
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./order-service-boot
+      DOCKER_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/order-service-boot
+      DOCKER_NATIVE_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/order-service-boot-native
+    defaults:
+      run:
+        working-directory: ${{ env.working-directory }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build with Maven
+        run: ./mvnw verify
+
+      - if: ${{ github.ref == 'refs/heads/main' }}
+        name: Build and Publish Docker Image
+        run: |
+          ./mvnw -DskipTests jib:dockerBuild -Dimage=$DOCKER_IMAGE_NAME
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker push $DOCKER_IMAGE_NAME
