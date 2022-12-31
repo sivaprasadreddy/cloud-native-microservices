@@ -21,8 +21,8 @@
         <micronaut.version>3.8.0</micronaut.version>
         <micronaut.test.resources.enabled>true</micronaut.test.resources.enabled>
         <micronaut.runtime>netty</micronaut.runtime>
-        <exec.mainClass>com.sivalabs.delivery.DeliveryServiceApplication</exec.mainClass>
-        <jib-maven-plugin.version>3.1.4</jib-maven-plugin.version>
+        <exec.mainClass>com.sivalabs.bookstore.delivery.DeliveryServiceApplication</exec.mainClass>
+        <jib-maven-plugin.version>3.3.1</jib-maven-plugin.version>
         <dockerhub.username>sivaprasadreddy</dockerhub.username>
         <dockerhub.imageName>${dockerhub.username}/${project.artifactId}</dockerhub.imageName>
     </properties>
@@ -147,7 +147,7 @@
                         </path>
                     </annotationProcessorPaths>
                     <compilerArgs>
-                        <arg>-Amicronaut.processing.group=com.sivalabs.delivery</arg>
+                        <arg>-Amicronaut.processing.group=com.sivalabs.bookstore.delivery</arg>
                         <arg>-Amicronaut.processing.module=delivery-service-micronaut</arg>
                     </compilerArgs>
                 </configuration>

@@ -1,4 +1,4 @@
-# Order Service SpringBoot
+# Product Service SpringBoot
 
 ## How to run tests?
 ```shell
@@ -14,10 +14,10 @@ $ ./mvnw spring-boot:run
 ## How to build docker image?
 ```shell
 # using Buildpacks
-$ ./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=sivaprasadreddy/order-service-boot
+$ ./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=sivaprasadreddy/product-service-boot
 
 # using Jib
-$ ./mvnw -DskipTests jib:dockerBuild -Dimage=sivaprasadreddy/order-service-boot
+$ ./mvnw -DskipTests jib:dockerBuild -Dimage=sivaprasadreddy/product-service-boot
 ```
 
 ## How to build GraalVM Native Image
@@ -27,5 +27,5 @@ $ sdk use java 22.3.r17-nik
 # to create a native binary using Native Tools
 $ ./mvnw -Pnative native:compile
 # to create docker image with native binary using buildpacks
-$ ./mvnw -Pnative spring-boot:build-image -Dspring-boot.build-image.imageName=sivaprasadreddy/order-service-boot-native
+$ ./mvnw -Pnative spring-boot:build-image -Dspring-boot.build-image.imageName=sivaprasadreddy/product-service-boot-native
 ```

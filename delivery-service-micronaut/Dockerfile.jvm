@@ -3,4 +3,4 @@ WORKDIR /home/app
 COPY classes /home/app/classes
 COPY dependency/* /home/app/libs/
 EXPOSE 8083
-ENTRYPOINT ["java", "-cp", "/home/app/libs/*:/home/app/classes/", "com.sivalabs.delivery.DeliveryServiceApplication"]
+ENTRYPOINT ["java", "-cp", "/home/app/libs/*:/home/app/classes/", "com.sivalabs.bookstore.delivery.DeliveryServiceApplication"]

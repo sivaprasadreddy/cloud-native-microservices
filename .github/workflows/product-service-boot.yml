@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - product-service-boot/**
+      - .github/workflows/product-service-boot.yml
     branches:
       - '**'
 
@@ -34,6 +35,6 @@ jobs:
       - if: ${{ github.ref == 'refs/heads/main' }}
         name: Build and Publish Docker Image
         run: |
-          docker build -f src/main/docker/Dockerfile.jvm -t $DOCKER_IMAGE_NAME .
+          ./mvnw -DskipTests jib:dockerBuild -Dimage=$DOCKER_IMAGE_NAME
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker push $DOCKER_IMAGE_NAME

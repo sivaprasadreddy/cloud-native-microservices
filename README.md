@@ -1,4 +1,10 @@
-# cloud-native-microservices
+# Cloud Native Microservices using Java
+
+## Install Java using SDKMAN
+```shell
+$ sdk install java 22.3.r17-nik
+$ sdk use java 22.3.r17-nik
+```
 
 ## How to run?
 ```shell

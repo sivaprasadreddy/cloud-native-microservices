@@ -1,0 +1,8 @@
+micronaut:
+  server:
+    port: ${random.port}
+
+test-resources:
+  containers:
+    kafka:
+      image-name: confluentinc/cp-kafka:7.3.0

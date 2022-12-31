@@ -26,7 +26,13 @@ function build() {
 
 function build_images() {
     cd product-service-quarkus || exit
-    docker build -f src/main/docker/Dockerfile.jvm -t sivaprasadreddy/product-service-quarkus .
+    #docker build -f src/main/docker/Dockerfile.jvm -t sivaprasadreddy/product-service-quarkus .
+    ./mvnw clean package -Dquarkus.container-image.build=true
+    cd ..
+
+    cd product-service-boot || exit
+    #./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=sivaprasadreddy/product-service-boot
+    ./mvnw -DskipTests jib:dockerBuild -Dimage=sivaprasadreddy/product-service-boot
     cd ..
 
     cd order-service-boot || exit
