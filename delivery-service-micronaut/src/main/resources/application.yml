@@ -7,13 +7,5 @@ netty:
   default:
     allocator:
       max-order: 3
-#kafka:
-#  bootstrap:
-#    servers: localhost:9092
-
-app:
-  newOrdersTopic: new-orders-topic
-  deliveredOrdersTopic: delivered-orders-topic
-  cancelledOrdersTopic: cancelled-orders-topic
-  errorOrdersTopic: error-orders-topic
-
+#rabbitmq:
+#  uri: amqp://localhost:5672

@@ -25,7 +25,7 @@ public class OrderCancelledEventHandlerTest extends AbstractIntegrationTest {
 
     @Autowired private OrderRepository orderRepository;
 
-    @Autowired private KafkaHelper kafkaHelper;
+    @Autowired private OrderEventPublisher orderEventPublisher;
 
     @Autowired private ApplicationProperties properties;
 
@@ -45,8 +45,7 @@ public class OrderCancelledEventHandlerTest extends AbstractIntegrationTest {
 
         orderRepository.saveAndFlush(order);
         log.info("Cancelling OrderId:{}", order.getOrderId());
-        kafkaHelper.send(
-                properties.cancelledOrdersTopic(),
+        orderEventPublisher.publish(
                 new OrderCancelledEvent(order.getOrderId(), "testing", Set.of(), null, null));
 
         await().atMost(30, SECONDS)

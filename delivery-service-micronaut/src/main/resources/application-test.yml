@@ -4,5 +4,5 @@ micronaut:
 
 test-resources:
   containers:
-    kafka:
-      image-name: confluentinc/cp-kafka:7.3.0
+    rabbitmq:
+      image-name: rabbitmq:3.11.5

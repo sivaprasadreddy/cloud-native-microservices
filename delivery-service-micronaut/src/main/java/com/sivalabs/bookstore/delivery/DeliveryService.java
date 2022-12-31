@@ -15,33 +15,27 @@ public class DeliveryService {
     private static final List<String> DELIVERY_ALLOWED_COUNTRIES =
             List.of("INDIA", "USA", "GERMANY", "UK");
 
-    private final KafkaMessagePublisher kafkaMessagePublisher;
-    private final ApplicationProperties properties;
+    private final OrderEventPublisher orderEventPublisher;
 
-    public DeliveryService(
-            KafkaMessagePublisher kafkaMessagePublisher, ApplicationProperties properties) {
-        this.kafkaMessagePublisher = kafkaMessagePublisher;
-        this.properties = properties;
+    public DeliveryService(OrderEventPublisher orderEventPublisher) {
+        this.orderEventPublisher = orderEventPublisher;
     }
 
     public void process(OrderCreatedEvent event) {
         try {
             if (canBeDelivered(event)) {
                 logger.info("OrderId: {} can be delivered", event.orderId());
-                kafkaMessagePublisher.send(
-                        properties.getDeliveredOrdersTopic(), buildOrderDeliveredEvent(event));
+                orderEventPublisher.send(buildOrderDeliveredEvent(event));
                 logger.info("Published OrderDelivered event with OrderId: {}", event.orderId());
             } else {
                 logger.info("OrderId: {} can not be delivered", event.orderId());
-                kafkaMessagePublisher.send(
-                        properties.getCancelledOrdersTopic(),
+                orderEventPublisher.send(
                         buildOrderCancelledEvent(event, "Can't deliver to the location"));
                 logger.info("Published OrderCancelled event with OrderId: {}", event.orderId());
             }
         } catch (RuntimeException e) {
             logger.error("Failed to process OrderCreatedEvent with orderId: " + event.orderId(), e);
-            kafkaMessagePublisher.send(
-                    properties.getErrorOrdersTopic(), buildOrderErrorEvent(event, e.getMessage()));
+            orderEventPublisher.send(buildOrderErrorEvent(event, e.getMessage()));
             logger.info("Published OrderError event with OrderId: {}", event.orderId());
         }
     }

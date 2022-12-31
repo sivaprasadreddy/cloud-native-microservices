@@ -15,9 +15,9 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.MockServerContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.lifecycle.Startables;
 import org.testcontainers.utility.DockerImageName;
 
@@ -27,8 +27,8 @@ public abstract class AbstractIntegrationTest {
 
     protected static final PostgreSQLContainer<?> postgres =
             new PostgreSQLContainer<>("postgres:15-alpine");
-    protected static final KafkaContainer kafka =
-            new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.3.0"));
+    protected static final RabbitMQContainer rabbitmq =
+            new RabbitMQContainer(DockerImageName.parse("rabbitmq:3.11.5-alpine"));
     protected static final MockServerContainer mockServer =
             new MockServerContainer(
                     DockerImageName.parse("jamesdbloom/mockserver:mockserver-5.13.2"));
@@ -37,7 +37,7 @@ public abstract class AbstractIntegrationTest {
 
     @BeforeAll
     static void beforeAll() {
-        Startables.deepStart(postgres, kafka, mockServer).join();
+        Startables.deepStart(postgres, rabbitmq, mockServer).join();
     }
 
     @LocalServerPort private Integer port;
@@ -53,8 +53,11 @@ public abstract class AbstractIntegrationTest {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
-        registry.add("spring.kafka.bootstrap-servers", kafka::getBootstrapServers);
-        registry.add("app.catalog-service-url", mockServer::getEndpoint);
+        registry.add("spring.rabbitmq.host", rabbitmq::getHost);
+        registry.add("spring.rabbitmq.port", rabbitmq::getAmqpPort);
+        registry.add("spring.rabbitmq.username", rabbitmq::getAdminUsername);
+        registry.add("spring.rabbitmq.password", rabbitmq::getAdminPassword);
+        registry.add("app.product-service-url", mockServer::getEndpoint);
         mockServerClient = new MockServerClient(mockServer.getHost(), mockServer.getServerPort());
     }
 

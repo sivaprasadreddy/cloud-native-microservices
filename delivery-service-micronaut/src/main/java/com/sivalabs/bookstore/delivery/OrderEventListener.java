@@ -1,15 +1,16 @@
 package com.sivalabs.bookstore.delivery;
 
+import static com.sivalabs.bookstore.delivery.RabbitMQConfig.ORDER_CREATED_EVENTS_QUEUE;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sivalabs.bookstore.delivery.model.OrderCreatedEvent;
-import io.micronaut.configuration.kafka.annotation.KafkaListener;
-import io.micronaut.configuration.kafka.annotation.OffsetReset;
-import io.micronaut.configuration.kafka.annotation.Topic;
+import io.micronaut.rabbitmq.annotation.Queue;
+import io.micronaut.rabbitmq.annotation.RabbitListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@KafkaListener(offsetReset = OffsetReset.LATEST)
+@RabbitListener
 public class OrderEventListener {
     private static final Logger logger = LoggerFactory.getLogger(OrderEventListener.class);
     private final DeliveryService deliveryService;
@@ -20,8 +21,8 @@ public class OrderEventListener {
         this.objectMapper = objectMapper;
     }
 
-    @Topic("${app.newOrdersTopic}")
-    public void receive(OrderCreatedEvent orderCreatedEvent) {
+    @Queue(ORDER_CREATED_EVENTS_QUEUE)
+    public void handleOrderCreatedEvent(OrderCreatedEvent orderCreatedEvent) {
         try {
             logger.info(
                     "Got OrderCreatedEvent payload: {}",

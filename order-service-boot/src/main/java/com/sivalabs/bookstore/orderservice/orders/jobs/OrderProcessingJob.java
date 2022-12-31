@@ -1,6 +1,5 @@
 package com.sivalabs.bookstore.orderservice.orders.jobs;
 
-import com.sivalabs.bookstore.orderservice.ApplicationProperties;
 import com.sivalabs.bookstore.orderservice.orders.domain.OrderService;
 import com.sivalabs.bookstore.orderservice.orders.domain.entity.Order;
 import com.sivalabs.bookstore.orderservice.orders.domain.entity.OrderStatus;
@@ -8,7 +7,7 @@ import com.sivalabs.bookstore.orderservice.orders.domain.model.Address;
 import com.sivalabs.bookstore.orderservice.orders.domain.model.Customer;
 import com.sivalabs.bookstore.orderservice.orders.domain.model.OrderCreatedEvent;
 import com.sivalabs.bookstore.orderservice.orders.domain.model.OrderItem;
-import com.sivalabs.bookstore.orderservice.orders.events.KafkaHelper;
+import com.sivalabs.bookstore.orderservice.orders.events.OrderEventPublisher;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,14 +20,11 @@ import org.springframework.stereotype.Component;
 public class OrderProcessingJob {
     private static final Logger log = LoggerFactory.getLogger(OrderProcessingJob.class);
     private final OrderService orderService;
-    private final KafkaHelper kafkaHelper;
-    private final ApplicationProperties properties;
+    private final OrderEventPublisher orderEventPublisher;
 
-    public OrderProcessingJob(
-            OrderService orderService, KafkaHelper kafkaHelper, ApplicationProperties properties) {
+    public OrderProcessingJob(OrderService orderService, OrderEventPublisher orderEventPublisher) {
         this.orderService = orderService;
-        this.kafkaHelper = kafkaHelper;
-        this.properties = properties;
+        this.orderEventPublisher = orderEventPublisher;
     }
 
     @Scheduled(fixedDelay = 10000)
@@ -36,7 +32,7 @@ public class OrderProcessingJob {
         List<Order> newOrders = orderService.findOrdersByStatus(OrderStatus.NEW);
         for (Order order : newOrders) {
             OrderCreatedEvent orderCreatedEvent = this.buildOrderCreatedEvent(order);
-            kafkaHelper.send(properties.newOrdersTopic(), orderCreatedEvent);
+            orderEventPublisher.publish(orderCreatedEvent);
             log.info("Published OrderCreatedEvent for orderId:{}", order.getOrderId());
             orderService.updateOrderStatus(order.getOrderId(), OrderStatus.IN_PROCESS, null);
         }

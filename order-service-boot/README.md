@@ -7,7 +7,7 @@ $ ./mvnw verify
 
 ## How to run application?
 ```shell
-$ docker-compose -f ../docker-compose.yml up -d
+$ ../run.sh start_infra
 $ ./mvnw spring-boot:run
 ```
 

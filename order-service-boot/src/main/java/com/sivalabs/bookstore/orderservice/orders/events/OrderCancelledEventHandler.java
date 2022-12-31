@@ -1,14 +1,14 @@
 package com.sivalabs.bookstore.orderservice.orders.events;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static com.sivalabs.bookstore.orderservice.config.RabbitMQConfig.ORDER_CANCELLED_EVENTS_QUEUE;
+
 import com.sivalabs.bookstore.orderservice.orders.domain.OrderService;
 import com.sivalabs.bookstore.orderservice.orders.domain.entity.OrderStatus;
 import com.sivalabs.bookstore.orderservice.orders.domain.model.OrderCancelledEvent;
 import com.sivalabs.bookstore.orderservice.orders.domain.model.OrderDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,17 +16,14 @@ public class OrderCancelledEventHandler {
     private static final Logger log = LoggerFactory.getLogger(OrderCancelledEventHandler.class);
 
     private final OrderService orderService;
-    private final ObjectMapper objectMapper;
 
-    public OrderCancelledEventHandler(OrderService orderService, ObjectMapper objectMapper) {
+    public OrderCancelledEventHandler(OrderService orderService) {
         this.orderService = orderService;
-        this.objectMapper = objectMapper;
     }
 
-    @KafkaListener(topics = "${app.cancelled-orders-topic}", groupId = "orders")
-    public void handle(String payload) {
+    @RabbitListener(queues = ORDER_CANCELLED_EVENTS_QUEUE)
+    public void handle(OrderCancelledEvent event) {
         try {
-            OrderCancelledEvent event = objectMapper.readValue(payload, OrderCancelledEvent.class);
             log.info("Received a OrderCancelledEvent with orderId:{}: ", event.orderId());
             OrderDTO order = orderService.findOrderByOrderId(event.orderId()).orElse(null);
             if (order == null) {
@@ -34,8 +31,8 @@ public class OrderCancelledEventHandler {
                 return;
             }
             orderService.updateOrderStatus(event.orderId(), OrderStatus.CANCELLED, event.reason());
-        } catch (JsonProcessingException e) {
-            log.error("Error processing OrderCancelledEvent. Payload: {}", payload);
+        } catch (RuntimeException e) {
+            log.error("Error processing OrderCancelledEvent. Payload: {}", event);
             log.error(e.getMessage(), e);
         }
     }

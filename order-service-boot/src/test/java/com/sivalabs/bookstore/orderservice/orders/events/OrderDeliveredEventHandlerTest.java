@@ -21,7 +21,7 @@ public class OrderDeliveredEventHandlerTest extends AbstractIntegrationTest {
 
     @Autowired private OrderRepository orderRepository;
 
-    @Autowired private KafkaHelper kafkaHelper;
+    @Autowired private OrderEventPublisher orderEventPublisher;
 
     @Autowired private ApplicationProperties properties;
 
@@ -41,8 +41,7 @@ public class OrderDeliveredEventHandlerTest extends AbstractIntegrationTest {
 
         orderRepository.saveAndFlush(order);
 
-        kafkaHelper.send(
-                properties.deliveredOrdersTopic(),
+        orderEventPublisher.publish(
                 new OrderDeliveredEvent(order.getOrderId(), Set.of(), null, null));
 
         await().atMost(30, SECONDS)

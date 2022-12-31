@@ -23,19 +23,21 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://bookstore-postgres:5432/orders
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - RABBITMQ_URI=amqp://rabbitmq:5672
     ports:
       - "8082:8082"
     restart: unless-stopped
     depends_on:
       - bookstore-postgres
-      - kafka
+      - rabbitmq
 
   delivery-service:
     image: "${DELIVERY_SERVICE_IMAGE}"
     container_name: delivery-service
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - RABBITMQ_URI=amqp://rabbitmq:5672
     ports:
       - "8083:8083"
     restart: unless-stopped
+    depends_on:
+      - rabbitmq

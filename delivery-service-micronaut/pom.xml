@@ -66,8 +66,8 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>io.micronaut.kafka</groupId>
-            <artifactId>micronaut-kafka</artifactId>
+            <groupId>io.micronaut.rabbitmq</groupId>
+            <artifactId>micronaut-rabbitmq</artifactId>
             <scope>compile</scope>
         </dependency>
         <dependency>

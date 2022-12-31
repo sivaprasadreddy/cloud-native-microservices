@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 class DeliveryServiceMicronautTest {
 
     @Inject ApplicationProperties properties;
-    @Inject KafkaMessagePublisher kafkaMessagePublisher;
+    @Inject OrderEventPublisher orderEventPublisher;
 
     @Test
     void shouldBeAbleToSendNewOrderEventMessage() {
@@ -29,8 +29,8 @@ class DeliveryServiceMicronautTest {
                                 "TS",
                                 "500072",
                                 "India"));
-        System.out.println("Sending OrderCreatedEvent to kafka...");
-        kafkaMessagePublisher.send(properties.getNewOrdersTopic(), event);
+        System.out.println("Sending OrderCreatedEvent to event queue...");
+        orderEventPublisher.send(event);
         // Use awaitility and assert
         try {
             Thread.sleep(5000);
