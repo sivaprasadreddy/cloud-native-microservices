@@ -23,7 +23,10 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://bookstore-postgres:5432/orders
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
-      - RABBITMQ_URI=amqp://rabbitmq:5672
+      - SPRING.RABBITMQ.HOST=rabbitmq
+      - SPRING.RABBITMQ.PORT=5672
+      - SPRING.RABBITMQ.USERNAME=guest
+      - SPRING.RABBITMQ.PASSWORD=guest
     ports:
       - "8082:8082"
     restart: unless-stopped
@@ -41,3 +44,12 @@ services:
     restart: unless-stopped
     depends_on:
       - rabbitmq
+
+  bookstore-ui:
+    image: "${BOOKSTORE_UI_IMAGE}"
+    container_name: bookstore-ui
+    ports:
+      - "8080:80"
+    environment:
+      PRODUCT_SERVICE_API_BASE_URL: http://localhost:8081
+      ORDER_SERVICE_API_BASE_URL: http://localhost:8082

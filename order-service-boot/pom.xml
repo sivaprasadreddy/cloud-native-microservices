@@ -225,7 +225,6 @@
                         <image>${dockerhub.imageName}</image>
                         <tags>
                             <tag>latest</tag>
-                            <tag>${project.version}</tag>
                         </tags>
                     </to>
                     <container>

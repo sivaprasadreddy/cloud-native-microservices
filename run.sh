@@ -22,6 +22,17 @@ function build() {
     cd delivery-service-micronaut || exit
     ./mvnw clean spotless:apply verify
     cd ..
+
+    cd bookstore-ui || exit
+    npm install
+    npm run build
+    cd ..
+}
+
+function build_ui_image() {
+    cd bookstore-ui || exit
+    docker build -f Dockerfile -t sivaprasadreddy/bookstore-ui .
+    cd ..
 }
 
 function build_images() {
@@ -44,6 +55,32 @@ function build_images() {
     #docker build -f Dockerfile -t sivaprasadreddy/delivery-service-micronaut .
     ./mvnw package -Dpackaging=docker
     cd ..
+
+    build_ui_image
+}
+
+function build_images_native() {
+    cd product-service-quarkus || exit
+    ./mvnw clean package -Pnative -Dquarkus.native.container-build=true -Dquarkus.container-image.build=true
+    docker build -f src/main/docker/Dockerfile.native -t sivaprasadreddy/product-service-quarkus-native .
+    cd ..
+
+#    cd product-service-boot || exit
+#    ./mvnw spring-boot:build-image -Pnative -Dspring-boot.build-image.imageName=sivaprasadreddy/product-service-boot-native
+#    cd ..
+
+    cd order-service-boot || exit
+    ./mvnw spring-boot:build-image -Pnative -Dspring-boot.build-image.imageName=sivaprasadreddy/order-service-boot-native
+    cd ..
+
+    cd delivery-service-micronaut || exit
+    # This is not native image
+    ./mvnw package -Dpackaging=docker -Ddockerhub.imageName=sivaprasadreddy/delivery-service-micronaut-native
+    # Need to figure out how to build a native image without installing GraalVM locally
+    #./mvnw package -Ddockerhub.imageName=sivaprasadreddy/delivery-service-micronaut-native -Dpackaging=docker-native
+    cd ..
+
+    build_ui_image
 }
 
 function start_infra() {
